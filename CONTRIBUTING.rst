@@ -107,3 +107,7 @@ Before you submit a pull request, check that it meets these guidelines:
 Code of Conduct
 ---------------
 Please note that the InstaEDA project is released with a Contributor Code of Conduct. By contributing to this project you agree to abide by its terms.
+
+Maintainers
+---------------
+This repository is currently maintained by [@d-sel](https://github.com/d-sel), [@jufu](https://github.com/jufu), [@roycezhou](https://github.com/roycezhou) and [@zmerpez](https://github.com/zmerpez)    
