@@ -1,4 +1,34 @@
 import numpy as np
+import pandas as pd
+import altair as alt
+
+def plot_intro(df, plot_title="", theme_config=""):
+    """Takes a dataframe with configurations and returns an altair object with summary metrics.
+
+    Parameters
+    -----------
+    df: pd.DataFrame
+        Dataframe from which to take columns not limited to numerical columns only
+    plot_title : string, optional
+        User can specify the plot title
+    theme_config : list, optional
+        A list of color configurations to be passed to theme
+
+    Returns
+    -------
+    plot : altair.Chart object
+        An altair plot object displaying summary metrics including the memory usage and 
+        the basic description of the input data.
+
+    Examples
+    -------
+    >>> example_df = pd.DataFrame({'animal': ['falcon', 'dog', 'spider', 'fish'],
+                                    'num_legs': [2, 4, 8, 0],
+                                    'num_wings': [2, 0, 0, 0],
+                                    'num_specimen_seen': [10, 2, 1, 8]})
+    >>> instaeda_py.plot_intro(example_df)
+    """
+    pass
 
 def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     """Takes a dataframe, subsets numeric columns and returns a correlation plot object.
@@ -67,3 +97,5 @@ def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', f
     >>> divide_and_fill(example_df)
     """
     pass
+
+
