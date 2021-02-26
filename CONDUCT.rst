@@ -45,7 +45,7 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be repor
 
 - Selma Duric (github id d-sel)
 - Justin Fu  (github id jufu)
-- Zeliha Ural Merpez (github id zeliha)
+- Zeliha Ural Merpez (github id zmerpez)
 - Siqi Zhou  (github id roycezhou)
 
 The project team will review and investigate all complaints, and will respond in a way that it deems appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
