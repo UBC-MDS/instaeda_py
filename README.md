@@ -9,8 +9,7 @@ This idea came up as we have been building data projects for quite some time now
 The main components of this package are:
 
 - **Data Cleansing**
-  - Missing Value handling: For missing value handling, the function will first distinguish the type, (blank, NaN, or string such as 'NA', 'na', 'n/a', etc.) then handle the missing values in one of several ways, chosen by the user including std, mean, max, min, etc.
-  - Custom Imputation using a techniques such as leveraging quantiles and randomization
+  - Custom Imputation of missing values in a data frame using additional techniques, i.e quantiles and randomization by dividing data set into several parts and returns combined imputed data frame.
 
 - **Exploratory Visualization**
   - Numerical Correlation Plot: takes in a data frame, selects the numerical columns and outputs a correlation plot object. User can optionally pass in subset of columns to define which columns to compare.
