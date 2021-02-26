@@ -1,3 +1,5 @@
+import numpy as np
+
 def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     """Takes a dataframe, subsets numeric columns and returns a correlation plot object.
 
@@ -24,5 +26,44 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
                                     'num_wings': [2, 0, 0, 0],
                                     'num_specimen_seen': [10, 2, 1, 8]})
     >>> instaeda_py.plot_corr(example_df)
+    """
+    pass
+
+def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', fill_value = None, random = False, parts = 1, verbose = 0):
+    """Takes a dataframe, subsets selected columns and divides into parts for imputation of missing values and returns a data frame.
+
+    Parameters
+    -----------
+    df: pd.DataFrame
+        Dataframe from which to take columns and check for missing values.
+    cols: list, optional
+        List of columns to perform imputation on. By default, None (perform on all numeric columns).
+    strategy : string, optional
+        imputation strategy, one of: {'mean', 'median', 'constant', 'most_frequent', 'quantile_10', 'quantile_90'}. By default, 'mean'.
+    fill_value : string or numerical value, optional
+        When strategy == 'constant', full_value is used to replace all occurences of missing_values.
+        If left to default, fill_value will be 0 when filling numerical data and 'missing' for strings or object data types.
+    random : boolean, optional
+        When random == True, shuffles data frame before filling. By default, False.
+    parts : integer, optional
+        The number of parts to divide rows of data frame into. By default, 1.
+    verbose : integer, optional
+        Controls the verbosity of the divide and fill. By default, 0.
+    
+
+    Returns
+    -------
+    data frame : pandas.DataFrame object
+        Data frame obtained after divide and fill on the corresponding columns. 
+
+    Examples
+    -------
+    >>> import numpy as np
+    >>> from instaeda import divide_and_fill
+    >>> example_df = pd.DataFrame({'animal': ['falcon', 'dog', 'spider', 'fish'],
+                                    'num_legs': [2, 4, 8, np.nan],
+                                    'num_wings': [2, np.nan, 0, 0],
+                                    'num_specimen_seen': [10, 2, np.nan, np.nan]})
+    >>> divide_and_fill(example_df)
     """
     pass
