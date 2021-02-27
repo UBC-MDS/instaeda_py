@@ -99,3 +99,36 @@ def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', f
     pass
 
 
+
+def plot_basic_distributions(df, cols=None, numerical_default_plot='histogram', categorical_default_plot='stacked_bar', boolean_defeault_plot='bar', colour_palette="purpleorange"):
+    """Takes a dataframe and generates plots based on types
+
+    Parameters
+    -----------
+    df: pd.DataFrame
+        Dataframe from which to generate plots for each column from
+    cols: list, optional
+        List of columns to generate plots for. By default, None (builds charts for all columns).
+    numerical_default_plot : string, optional
+        chart type to generate for numerical columns. By default 'histogram'
+    categorical_default_plot : string, optional
+        chart type to generate for categorical columns. By default 'stacked_bar'        
+    boolean_default_plot : string, optional
+        chart type to generate for boolean columns. By default 'bar'        
+    colour_palette : string, optional
+        one of Altair accepted colour schemes
+
+    Returns
+    -------
+    dict_plots: dict of altair.Chart objects using the column name as the key
+        dictionary of generated altair.Chart objects with the column name as the key
+
+    Examples
+    -------
+    >>> example_df = pd.DataFrame({'animal': ['falcon', 'dog', 'spider', 'fish'],
+                                    'num_legs': [2, 4, 8, 0],
+                                    'num_wings': [2, 0, 0, 0],
+                                    'num_specimen_seen': [10, 2, 1, 8]})
+    >>> instaeda_py.plot_distribution(example_df)
+    """
+    return None
