@@ -16,7 +16,7 @@ The main components of this package are:
 
 - **Exploratory Visualization**
   - Numerical Correlation Plot: takes in a data frame, selects the numerical columns and outputs a correlation plot object. User can optionally pass in subset of columns to define which columns to compare.
-  - Distributional Auto Plot by datatype: Pass in data frame of all data, and based on parameters, will return histograms, bar charts, or other charts depending on what is appropriate for the given datatype.
+  - Plot Basic Distribution Plot by datatype: Pass in data frame and based on parameters, will return histograms, bar charts, or other chart types depending on the column's datatype.
 
 There are a myriad of packages that provide similar functionality in the Python ecosystem. A few of the more popular packages include:
 
