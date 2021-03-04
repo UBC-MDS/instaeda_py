@@ -100,7 +100,7 @@ def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', f
 
 
 
-def plot_basic_distributions(df, cols=None, numerical_default_plot='histogram', categorical_default_plot='stacked_bar', boolean_defeault_plot='bar', colour_palette="purpleorange"):
+def plot_basic_distributions(df, cols=None, include=None, vega_theme="ggplot2"):
     """Takes a dataframe and generates plots based on types
 
     Parameters
@@ -109,14 +109,10 @@ def plot_basic_distributions(df, cols=None, numerical_default_plot='histogram', 
         Dataframe from which to generate plots for each column from
     cols: list, optional
         List of columns to generate plots for. By default, None (builds charts for all columns).
-    numerical_default_plot : string, optional
-        chart type to generate for numerical columns. By default 'histogram'
-    categorical_default_plot : string, optional
-        chart type to generate for categorical columns. By default 'stacked_bar'        
-    boolean_default_plot : string, optional
-        chart type to generate for boolean columns. By default 'bar'        
-    colour_palette : string, optional
-        one of Altair accepted colour schemes
+    include: string, optional
+        Select the data types to include. Supported types include "string" and "number". By default, it will return both string and number columns.
+    vega_theme : string, optional
+        Select the vega.themes for the altair plots. The options include: excel, ggplot2, quartz, vox, fivethirtyeight, dark, latimes, urbaninstitute, and googlecharts. By default, it uses ggplot2.
 
     Returns
     -------
@@ -131,4 +127,40 @@ def plot_basic_distributions(df, cols=None, numerical_default_plot='histogram', 
                                     'num_specimen_seen': [10, 2, 1, 8]})
     >>> instaeda_py.plot_distribution(example_df)
     """
-    return None
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The df parameter must be a pandas dataframe")
+
+
+    dict_plots = {}
+    df_data = None
+
+    # Set vega theme
+    alt.renderers.enable(embed_options={'theme': vega_theme})
+
+    # First filter:  select columns
+    if cols is None:    
+        df_data = df
+    else:
+        df_data = df[cols]    
+    
+    if include not in (None, 'number', 'string'):
+        raise KeyError("The include parameter must be None, 'number' or 'string'")
+
+    # Second filter: select types to include
+    if include == 'number' or include is None:
+        
+        df_data_number = df_data.select_dtypes(include="number")        
+        for col in df_data_number.columns.tolist():
+            dict_plots[col] = alt.Chart(df_data_number).mark_bar().encode(
+                                alt.X(col, bin=alt.Bin(maxbins=50)), y='count()')
+    
+    if include == 'string' or include is None:
+
+        df_data_string = df_data.select_dtypes(include="object")
+        for col in df_data_string.columns.tolist():            
+            dict_plots[col] = alt.Chart(df_data_string).mark_bar().encode(
+                                    x=alt.X('count()'),
+                                    y=alt.Y(col, sort='-x')
+                                )
+            
+    return dict_plots
