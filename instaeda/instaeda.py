@@ -189,9 +189,8 @@ def divide_and_fill(
         raise Exception("All items in list cols must be numeric, or non-numeric.")
 
     # Filling data frame
-    indexing = np.arange(
-        0, filled_df.shape[0], filled_df.shape[0] / (parts + 1), dtype=int
-    )
+    spacing = filled_df.shape[0]/(parts + 1)
+    indexing = np.arange(0, filled_df.shape[0] + spacing, spacing, dtype=int)
     for i in range(len(indexing) - 1):
         imputer = SimpleImputer(
             missing_values=missing_values, strategy=strategy, fill_value=fill_value
