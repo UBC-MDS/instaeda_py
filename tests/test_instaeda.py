@@ -44,3 +44,4 @@ def test_plot_corr(input_dataframe):
     assert (corr_plot.encoding.x.field == 'variable_1') & (corr_plot.encoding.y.field == 'variable_2'), 
     "map 'variable_1' to x-axis, 'variable_2' to y-axis"
     assert isinstance(corr_plot, alt.Chart), "output expected altair Chart object"
+    
