@@ -60,8 +60,10 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     """
     
     # check user input
-    assert method in {'pearson', 'kendall', 'spearman'}, "correlation method not acceptable"
+    correlation_methods = {'pearson', 'kendall', 'spearman'}
     colour_palette_list = {'blueorange', 'brownbluegreen', 'purplegreen', 'pinkyellowgreen', 'purpleorange', 'redblue', 'redgrey', 'redyellowblue', 'redyellowgreen', 'spectral'}
+    
+    assert method in correlation_methods, "correlation method not acceptable"
     if colour_palette not in colour_palette_list:
         warnings.warn("Recommended Altair continuous diverging colour palette")
     
