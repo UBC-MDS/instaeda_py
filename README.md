@@ -12,7 +12,7 @@ The main components of this package are:
   - Plot basic information for input data: Take the input data and declare the title of the plot and a list of configurations to be passed to themes to invisibly return the Altair object with summary metrics including the memory usage, the basic description of the input data such as the distribution of the discrete columns, continuous columns, all missing columns, complete rows and missing observations. 
   
 - **Data Cleansing**
-  - Custom Imputation of missing values in a data frame using additional techniques, i.e quantiles and randomization by dividing data set into several parts and returns combined imputed data frame.
+  - Custom Imputation of missing values in a data frame using additional techniques, i.e random shuffling by dividing data set into several parts and filling each part separately then returns combined imputed data frame.
 
 - **Exploratory Visualization**
   - Numerical Correlation Plot: takes in a data frame, selects the numerical columns and outputs a correlation plot object. User can optionally pass in subset of columns to define which columns to compare.
