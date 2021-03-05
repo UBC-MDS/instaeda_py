@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import altair as alt
+import warnings
 
 def plot_intro(df, plot_title="", theme_config=""):
     """Takes a dataframe with configurations and returns an altair object with summary metrics.
@@ -57,7 +58,39 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
                                     'num_specimen_seen': [10, 2, 1, 8]})
     >>> instaeda_py.plot_corr(example_df)
     """
-    pass
+    
+    # check user input
+    correlation_methods = {'pearson', 'kendall', 'spearman'}
+    colour_palette_list = {'blueorange', 'brownbluegreen', 'purplegreen', 'pinkyellowgreen', 'purpleorange', 'redblue', 'redgrey', 'redyellowblue', 'redyellowgreen', 'spectral'}
+    numeric_cols = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    assert isinstance(df, pd.DataFrame), "must pass in pandas DataFrame"
+    assert method in correlation_methods, "correlation method not acceptable"
+    if colour_palette not in colour_palette_list:
+        warnings.warn("Recommended Altair continuous diverging colour palette")
+    
+    # calculate 
+    if cols == None:
+        assert(df.select_dtypes(np.number).shape[1] >= 2), "Dataframe does not have enough numeric columns for comparison"
+        df = df.select_dtypes(include = numeric_cols)
+    else:
+        assert(df[cols].select_dtypes(np.number).shape[1] >= 2), "Dataframe does not have enough numeric columns for comparison"
+        df = df[cols].select_dtypes(include = numeric_cols)
+    corr_df = round(df.corr(method=method),4).stack().reset_index(name='corr').rename(columns={'level_0':'variable_1','level_1':'variable_2'})
+    
+    # plot base plot
+    corr_plot = alt.Chart(corr_df, title='Correlations between variables').mark_rect().encode(
+    x = alt.X('variable_1', title=''),
+    y = alt.Y('variable_2', title=''),
+        color = alt.Color('corr', scale = alt.Scale(scheme=colour_palette, domain=(-1, 1)))
+    ).properties(height=400, width=400)
+    
+    # plot corr values
+    text = corr_plot.mark_text().encode(
+    text='corr:Q',
+    color=alt.value('black')
+    )
+    
+    return corr_plot + text
 
 def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', fill_value = None, random = False, parts = 1, verbose = 0):
     """Takes a dataframe, subsets selected columns and divides into parts for imputation of missing values and returns a data frame.
