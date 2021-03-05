@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 import altair as alt
+from sklearn.impute import SimpleImputer
 import warnings
+
 
 def plot_intro(df, plot_title="", theme_config=""):
     """Takes a dataframe with configurations and returns an altair object with summary metrics.
@@ -92,19 +94,30 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     
     return corr_plot + text
 
-def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', fill_value = None, random = False, parts = 1, verbose = 0):
+def divide_and_fill(
+    dataframe,
+    cols=None,
+    missing_values=np.nan,
+    strategy="mean",
+    fill_value=None,
+    random=False,
+    parts=1,
+    verbose=0,
+):
     """Takes a dataframe, subsets selected columns and divides into parts for imputation of missing values and returns a data frame.
 
     Parameters
     -----------
-    df: pd.DataFrame
+    dataframe: pd.DataFrame
         Dataframe from which to take columns and check for missing values.
     cols: list, optional
         List of columns to perform imputation on. By default, None (perform on all numeric columns).
+    missing_values: int, float, str, np.nan or None
+        The placeholder for the missing values. All occurences of missing values will be imputed.
     strategy : string, optional
-        imputation strategy, one of: {'mean', 'median', 'constant', 'most_frequent', 'quantile_10', 'quantile_90'}. By default, 'mean'.
+        imputation strategy, one of: {'mean', 'median', 'constant', 'most_frequent'}. By default, 'mean'.
     fill_value : string or numerical value, optional
-        When strategy == 'constant', full_value is used to replace all occurences of missing_values.
+        When strategy == 'constant', fill_value is used to replace all occurences of missing_values.
         If left to default, fill_value will be 0 when filling numerical data and 'missing' for strings or object data types.
     random : boolean, optional
         When random == True, shuffles data frame before filling. By default, False.
@@ -112,12 +125,12 @@ def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', f
         The number of parts to divide rows of data frame into. By default, 1.
     verbose : integer, optional
         Controls the verbosity of the divide and fill. By default, 0.
-    
+
 
     Returns
     -------
-    data frame : pandas.DataFrame object
-        Data frame obtained after divide and fill on the corresponding columns. 
+    dataframe : pandas.DataFrame object
+        Data frame obtained after divide and fill on the corresponding columns.
 
     Examples
     -------
@@ -129,7 +142,100 @@ def divide_and_fill(df, cols=None, missing_values = np.nan, strategy = 'mean', f
                                     'num_specimen_seen': [10, 2, np.nan, np.nan]})
     >>> divide_and_fill(example_df)
     """
-    pass
+    filled_df = None
+    allowed_strategies = ["mean", "median", "constant", "most_frequent"]
+
+    # Checking inputs
+    if verbose:
+        print("Checking inputs")
+
+    if not isinstance(dataframe, pd.DataFrame):
+        raise Exception("The input data must be of type pandas.DataFrame!")
+
+    if cols == None:
+        cols = list(dataframe.select_dtypes(include="number").columns)
+
+    if (
+        not isinstance(cols, list)
+        or not all(isinstance(x, str) for x in cols)
+        or not set(cols).issubset(set(dataframe.columns))
+    ):
+        raise Exception(
+            "The input cols must be a list of strings belong to the column names for input dataframe!"
+        )
+
+    if (
+        not isinstance(missing_values, int)
+        and not isinstance(missing_values, float)
+        and not isinstance(missing_values, str)
+        and (missing_values is not None)
+    ):
+        raise Exception(
+            "The input missing values must be one of the following: (int, float, str, np.nan, None)"
+        )
+
+    if strategy not in allowed_strategies:
+        raise ValueError(
+            "Can only use these strategies: {0} got strategy = {1}".format(
+                allowed_strategies, strategy
+            )
+        )
+
+    if (
+        (fill_value is not None)
+        and not isinstance(fill_value, int)
+        and not isinstance(fill_value, float)
+        and not isinstance(fill_value, str)
+    ):
+        raise Exception(
+            "The input fill values must be one of the following: (int, float, str, None)"
+        )
+
+    if not isinstance(random, bool):
+        raise Exception("The input random must be True or False")
+
+    if not isinstance(parts, int) or (parts < 1):
+        raise ValueError("Can only use positive integer parts.")
+
+    if not isinstance(verbose, int):
+        raise ValueError("Can only use integer for verbose.")
+
+    # Constructing filled dataframe skeleton.
+    if verbose:
+        print("Constructing filled dataframe skeleton.")
+
+    if random:
+        filled_df = dataframe.copy().sample(frac=1).reset_index(drop=True)
+    else:
+        filled_df = dataframe.copy()
+
+    if (set(cols) <= set(dataframe.select_dtypes(include="number").columns)):
+        if isinstance(fill_value, str) :
+            raise ValueError(
+                "For numeric columns, can only use fill values: (int, float, None)"
+            )
+    elif (set(cols) <= set(dataframe.select_dtypes(exclude="number").columns)):
+        if isinstance(fill_value, int) or isinstance(fill_value, float):
+            raise ValueError(
+                "For non-numeric columns, can only use fill values: (None, str)"
+            )
+    else:
+        raise Exception("All items in list cols must be numeric, or non-numeric.")
+
+    # Filling data frame
+    spacing = filled_df.shape[0]/(parts + 1)
+    indexing = np.arange(0, filled_df.shape[0] + spacing, spacing, dtype=int)
+    for i in range(len(indexing) - 1):
+        imputer = SimpleImputer(
+            missing_values=missing_values, strategy=strategy, fill_value=fill_value
+        )
+        filled_df.loc[indexing[i] : indexing[i + 1], cols] = imputer.fit_transform(
+            filled_df.loc[indexing[i] : indexing[i + 1], cols]
+        )
+
+    if verbose:
+        print("Returning data frame.")
+    return filled_df
 
 
 

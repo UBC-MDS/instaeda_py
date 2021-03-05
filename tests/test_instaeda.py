@@ -4,7 +4,11 @@ import pytest
 from palmerpenguins import load_penguins
 import pandas as pd
 import altair as alt
+import numpy as np
+from sklearn.impute import SimpleImputer
+from pandas._testing import assert_frame_equal
 import warnings
+
 
 def test_version():
     assert __version__ == '0.1.0'
@@ -36,6 +40,65 @@ def test_plot_basic_distributions(input_dataframe):
     for key in dict_plots.keys():
         assert isinstance(dict_plots[key], alt.Chart)
 
+        
+        
+def test_divide_and_fill(input_dataframe):
+    not_a_dataframe = [[1, 2], [0.5, 0.9], ["a", "b"]]
+    not_na_dataframe = pd.DataFrame({"col_1": [1, 2],
+                                    "col_2": [0.9, 0.9],
+                                    "col_3": ["a", "b"]})
+    na_numerical_dataframe = pd.DataFrame({"col_1": [1, 2],
+                                           "col_2": [np.nan, 0.9],
+                                           "col_3": ["a", "b"]})
+    na_categorical_dataframe = pd.DataFrame({"col_1": [1, 2],
+                                           "col_2": [0.9, 0.9],
+                                           "col_3": ["a", np.nan]})
+
+    # Tests that the correct error message is displayed if a non-dataframe object is passed
+    try:
+        instaeda.divide_and_fill(not_a_dataframe)
+    except Exception:
+        pass
+    else: 
+        raise Exception("Expected an Exception, but none were raised. Not a dataframe.")
+        
+    # Test that the output for none NA is same as input
+    assert isinstance(instaeda.divide_and_fill(not_na_dataframe), pd.DataFrame)
+    assert_frame_equal(instaeda.divide_and_fill(not_na_dataframe), not_na_dataframe, check_dtype = False)
+    
+    # Test that the output for na numerical column
+    assert isinstance(instaeda.divide_and_fill(na_numerical_dataframe), pd.DataFrame)
+    assert_frame_equal(instaeda.divide_and_fill(na_numerical_dataframe), not_na_dataframe, check_dtype = False)
+    
+    # Test that the output for na categorical column
+    assert isinstance(instaeda.divide_and_fill(na_categorical_dataframe, cols = ['col_3'], 
+                                               strategy = 'constant', fill_value = 'b'), 
+                      pd.DataFrame)
+    assert_frame_equal(instaeda.divide_and_fill(na_categorical_dataframe, cols = ['col_3'], 
+                                               strategy = 'constant', fill_value = 'b'), not_na_dataframe, 
+                       check_dtype = False)
+    # Test for column types and exist in dataframe
+    try:
+        instaeda.divide_and_fill(na_numerical_dataframe, cols = ["col_1", "col_3"])
+        instaeda.divide_and_fill(na_numerical_dataframe, cols = [])
+        instaeda.divide_and_fill(na_numerical_dataframe, cols = ["not a column"])
+        
+    except Exception:
+        pass
+    else:
+        raise Exception("Expected an Exception, but none were raised. Column types and Existance")
+    
+    #Test for strategy
+    try:
+        instaeda.divide_and_fill(na_numerical_dataframe, strategy = "most_f")
+    except Exception:
+        pass
+    else:
+        raise Exception("Expected an Exception, but none were raised. Strategy.")
+    
+
+
+
 def test_plot_corr(input_dataframe):
     assert instaeda.plot_corr(input_dataframe).layer[0].mark == "rect", "resulting mark should be type 'rect'"
     assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.shorthand == 'corr', "correlation values should be plotted on colour"
@@ -43,3 +106,4 @@ def test_plot_corr(input_dataframe):
     assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.scale.domain == (-1, 1), "correlation values between -1, 1"
     assert (instaeda.plot_corr(input_dataframe).layer[0].encoding.x.shorthand == 'variable_1') & (instaeda.plot_corr(input_dataframe).layer[0].encoding.y.shorthand == 'variable_2'), "map 'variable_1' to x-axis, 'variable_2' to y-axis"
     assert isinstance(instaeda.plot_corr(input_dataframe), alt.LayerChart), "output expected altair Layer Chart object"
+
