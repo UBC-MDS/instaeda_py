@@ -115,6 +115,7 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
         raise Exception("correlation method not acceptable")
     if colour_palette not in colour_palette_list:
         warnings.warn("Recommended Altair continuous diverging colour palette")
+        
     
     # calculate 
     if cols == None:
