@@ -107,3 +107,51 @@ def test_plot_corr(input_dataframe):
     assert (instaeda.plot_corr(input_dataframe).layer[0].encoding.x.shorthand == 'variable_1') & (instaeda.plot_corr(input_dataframe).layer[0].encoding.y.shorthand == 'variable_2'), "map 'variable_1' to x-axis, 'variable_2' to y-axis"
     assert isinstance(instaeda.plot_corr(input_dataframe), alt.LayerChart), "output expected altair Layer Chart object"
 
+def test_plot_intro(input_dataframe):
+
+    # Check whether the num of all missing columns is an integer
+    sum_missing_columns = input_dataframe.isnull().sum(axis = 0) 
+    num_of_all_missing_columns = sum_missing_columns[sum_missing_columns.iloc[:, 0] == df.shape[0]].shape[0]
+    assert isinstance(num_of_all_missing_columns, int)
+
+    # Check whether the num of complete rows is an integer
+    sum_missing_rows = input_dataframe.isnull().sum(axis = 1)
+    num_complete_rows = sum_missing_rows[sum_missing_rows.iloc[:, 0] == 0].shape[0]
+    assert isinstance(num_complete_rows, int)
+
+    # Check the shape of info dataframe 
+    info_df = pd.DataFrame({'rows': input_dataframe.shape[0], 
+                            'columns': input_dataframe.shape[1],
+                            'numeric_columns': len(list(input_dataframe.select_dtypes(include=[np.number]).columns.values)),
+                            'all_missing_columns': num_of_all_missing_columns, 
+                            'total_missing_values': input_dataframe.isnull().sum().sum(),
+                            'complete_rows': num_complete_rows,
+                            'total_observations': input_dataframe.shape[0] * input_dataframe.shape[1],
+                            'memory_usage': input_dataframe.memory_usage(deep=True).sum(),
+                       })
+    info_df_rows = info_df.shape[0]
+    info_df_cols = info_df.shape[1]
+    assert info_df_rows == 8
+    assert info_df_cols == 2
+
+    # Check the shape of plotting dataframe
+    plot_df = pd.DataFrame({'Metrics': ['Numeric Columns', 'All Missing Columns', 'Missing Observations', 'Complete Rows'], 
+                            'Value': [info_df['numeric_columns']/info_df['columns'], 
+                                      info_df['all_missing_columns']/info_df['columns'],
+                                      info_df['total_missing_values']/info_df['total_observations'],
+                                      info_df['complete_rows']/info_df['rows']],
+                            'Dimension': ['column', 'column', 'observation', 'row']
+                })
+    plot_df_rows = info_df.shape[0]
+    plot_df_cols = info_df.shape[1]
+    assert plot_df_rows == 3
+    assert plot_df_cols == 4
+
+    # Test the altair object
+    test_plot = instaeda.plot_intro(input_dataframe)
+
+    assert test_plot.encoding.x.field == 'Value', 'x_axis should be mapped to the x axis'
+    assert test_plot.encoding.y.field == 'Metrics', 'y_axis should be mapped to the y axis'
+    assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
+    assert test_plot.encoding.x.scale.zero == True, "x-axis should start at 0"
+    assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
