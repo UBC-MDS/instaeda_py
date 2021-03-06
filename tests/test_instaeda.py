@@ -114,6 +114,39 @@ def test_divide_and_fill(input_dataframe):
     else:
         raise Exception("Expected an Exception, but none were raised. Strategy.")
     
+        
+    # test verbose=True
+    try:
+        instaeda.divide_and_fill(not_na_dataframe, verbose=True)
+    except Exception as exc:
+        assert False, f"'divide_and_fill' raised an exception {exc}"
+
+
+    # test random parameter
+    with pytest.raises(Exception) as exc_info:
+        instaeda.divide_and_fill(not_na_dataframe, random=12345)
+    assert 'The input random must be True or False' in str(exc_info.value)     
+    # should not raise an acception 
+    try:
+        instaeda.divide_and_fill(not_na_dataframe, random=True)
+    except Exception as exc:
+        assert False, f"'divide_and_fill' raised an exception {exc}"
+    try:
+        instaeda.divide_and_fill(not_na_dataframe, random=False)
+    except Exception as exc:
+        assert False, f"'divide_and_fill' raised an exception {exc}"
+
+
+
+    with pytest.raises(Exception) as exc_info:
+        instaeda.divide_and_fill(not_na_dataframe, parts="string part")
+    assert 'Can only use positive integer parts.' in str(exc_info.value) 
+
+    with pytest.raises(Exception) as exc_info:
+        instaeda.divide_and_fill(not_na_dataframe, verbose="string part")
+    assert 'Can only use integer for verbose' in str(exc_info.value)             
+
+
 
 
 
@@ -124,6 +157,36 @@ def test_plot_corr(input_dataframe):
     assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.scale.domain == (-1, 1), "correlation values between -1, 1"
     assert (instaeda.plot_corr(input_dataframe).layer[0].encoding.x.shorthand == 'variable_1') & (instaeda.plot_corr(input_dataframe).layer[0].encoding.y.shorthand == 'variable_2'), "map 'variable_1' to x-axis, 'variable_2' to y-axis"
     assert isinstance(instaeda.plot_corr(input_dataframe), alt.LayerChart), "output expected altair Layer Chart object"
+
+    # test not a dataframe
+    with pytest.raises(Exception) as exc_info:
+        instaeda.plot_corr(['not', 'a', 'dataframe'])             
+    assert 'must pass in pandas DataFrame' in str(exc_info.value)     
+
+    # test non supported method
+    with pytest.raises(Exception) as exc_info:
+        instaeda.plot_corr(input_dataframe, method="non supported method")
+    assert 'correlation method not acceptable' in str(exc_info.value)    
+
+    # test non supported colour palette
+    with pytest.warns(UserWarning) as exc_info:
+        instaeda.plot_corr(input_dataframe, colour_palette="non supported color palette")    
+
+    # test cols parameter 
+    with pytest.raises(Exception) as exc_info:
+        instaeda.plot_corr(input_dataframe, cols=['year'])
+    assert 'Dataframe does not have enough numeric columns for comparison' in str(exc_info.value)        
+
+    with pytest.raises(Exception) as exc_info:
+        instaeda.plot_corr(input_dataframe, cols=['year'])
+    assert 'Dataframe does not have enough numeric columns for comparison' in str(exc_info.value)        
+
+    # should not raise an exception
+    try:
+        instaeda.plot_corr(input_dataframe, cols=['year','flipper_length_mm'])
+    except Exception as exc:
+        assert False, f"'divide_and_fill' raised an exception {exc}"
+
 
 def test_plot_intro(input_dataframe):
 
@@ -175,8 +238,9 @@ def test_plot_intro(input_dataframe):
     assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
     assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
 
-
+    #plot_title tests
     test_plot = instaeda.plot_intro(input_dataframe, plot_title="meow") 
-
     assert test_plot.title == 'meow', 'the result plot should have correctly set the title to meow'
+    test_plot = instaeda.plot_intro(input_dataframe, plot_title="") 
+    assert "Memory Usage" in test_plot.title, 'Fail using an empty plot_title'
     
