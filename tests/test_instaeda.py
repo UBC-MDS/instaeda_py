@@ -126,10 +126,6 @@ def test_plot_corr(input_dataframe):
     assert isinstance(instaeda.plot_corr(input_dataframe), alt.LayerChart), "output expected altair Layer Chart object"
 
 def test_plot_intro(input_dataframe):
-    test_df = pd.DataFrame({'animal': ['falcon', 'dog', 'spider', 'fish'],
-                                    'num_legs': [np.NaN, 4, 8, 0],
-                                    'num_wings': [np.NaN, 0, 0, 0],
-                                    'num_specimen_seen': [10, 2, 1, 8]})
 
     # Check whether the num of all missing columns is an integer
     sum_missing_columns = input_dataframe.isnull().sum(axis = 0) 
@@ -158,11 +154,11 @@ def test_plot_intro(input_dataframe):
 
     # Check the shape of plotting dataframe
     plot_df = pd.DataFrame({'Metrics': ['Numeric Columns', 'All Missing Columns', 'Missing Observations', 'Complete Rows'], 
-                            'Value': [float(input_dataframe['numeric_columns']/input_dataframe['columns']), 
-                                      float(input_dataframe['all_missing_columns']/input_dataframe['columns']),
-                                      float(input_dataframe['total_missing_values']/input_dataframe['total_observations']),
-                                      float(input_dataframe['complete_rows']/input_dataframe['rows'])],
-                            'Dimension': ['column', 'column', 'observation', 'row']
+                            'Value': [float(info_df['numeric_columns']/info_df['columns']), 
+                                      float(info_df['all_missing_columns']/info_df['columns']),
+                                      float(info_df['total_missing_values']/info_df['total_observations']),
+                                      float(info_df['complete_rows']/info_df['rows'])],
+                            'Dimension': ['column', 'column', 'observation', 'row'], 
                 })
     plot_df_rows = plot_df.shape[0]
     plot_df_cols = plot_df.shape[1]
@@ -170,9 +166,12 @@ def test_plot_intro(input_dataframe):
     assert plot_df_cols == 3
 
     # Test the altair object
-    test_plot = instaeda.plot_intro(input_dataframe)
+    plot_title = 'Memory Usage: ' + str(float(info_df['memory_usage'])) + 'kb'
+    theme_config='Dimension'
+    test_plot = alt.Chart(plot_df, title=plot_title).mark_bar().encode(
+            alt.X('Value', axis=alt.Axis(format='%')),
+            alt.Y('Metrics'),
+            color=alt.Color(theme_config)) 
 
-    assert test_plot.encoding.x.field == 'Value', 'x_axis should be mapped to the x axis'
-    assert test_plot.encoding.y.field == 'Metrics', 'y_axis should be mapped to the y axis'
     assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
     assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
