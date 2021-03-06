@@ -24,6 +24,7 @@ def test_input_df(input_dataframe):
 
 def test_plot_basic_distributions(input_dataframe):
     
+    # Test input parameters
     with pytest.raises(KeyError) as exc_info:
         instaeda.plot_basic_distributions(input_dataframe, cols=['invalid column name'])     
     assert 'are in the [columns]' in str(exc_info.value) 
@@ -36,10 +37,27 @@ def test_plot_basic_distributions(input_dataframe):
         instaeda.plot_basic_distributions(['not', 'a', 'dataframe'])             
     assert 'The df parameter must be a pandas dataframe' in str(exc_info.value)     
 
+    with pytest.warns(UserWarning) as exc_info:
+        instaeda.plot_basic_distributions(input_dataframe, vega_theme="unsupported theme")        
+
+    with pytest.warns(UserWarning) as exc_info:
+        #This should return an empty dictionary (no plots generated)
+        instaeda.plot_basic_distributions(input_dataframe, cols=['sex'], include='number')        
+
+
+    # Tests the output plots
     dict_plots = instaeda.plot_basic_distributions(input_dataframe)
     for key in dict_plots.keys():
         assert isinstance(dict_plots[key], alt.Chart)
+    
+    assert dict_plots['bill_length_mm'].mark == 'bar'
+    assert dict_plots['sex'].mark == 'bar'
 
+    assert dict_plots['bill_length_mm'].encoding.y['shorthand']=='count()'
+    assert dict_plots['sex'].encoding.x['shorthand']=='count()'
+
+    assert len(dict_plots.keys()) == 8
+    assert list(dict_plots.keys()) == ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'year', 'species', 'island', 'sex']
         
         
 def test_divide_and_fill(input_dataframe):

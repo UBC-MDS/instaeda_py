@@ -292,7 +292,7 @@ def plot_basic_distributions(df, cols=None, include=None, vega_theme="ggplot2"):
     cols: list, optional
         List of columns to generate plots for. By default, None (builds charts for all columns).
     include: string, optional
-        Select the data types to include. Supported types include "string" and "number". By default, it will return both string and number columns.
+        Select the data types to include. Supported values include None, "string" and "number". By default, None - it will return both string and number columns.
     vega_theme : string, optional
         Select the vega.themes for the altair plots. The options include: excel, ggplot2, quartz, vox, fivethirtyeight, dark, latimes, urbaninstitute, and googlecharts. By default, it uses ggplot2.
 
@@ -313,11 +313,13 @@ def plot_basic_distributions(df, cols=None, include=None, vega_theme="ggplot2"):
         raise TypeError("The df parameter must be a pandas dataframe")
 
 
-    dict_plots = {}
-    df_data = None
-
+    if vega_theme not in ('excel','ggplot2','quartz','vox','fivethirtyeight', 'dark', 'latimes', 'urbaninstitute', 'googlecharts'):
+        warnings.warn("You have selected a theme that is not one of the default Vega color themes.")
     # Set vega theme
     alt.renderers.enable(embed_options={'theme': vega_theme})
+
+    dict_plots = {}
+    df_data = None
 
     # First filter:  select columns
     if cols is None:    
@@ -344,5 +346,8 @@ def plot_basic_distributions(df, cols=None, include=None, vega_theme="ggplot2"):
                                     x=alt.X('count()'),
                                     y=alt.Y(col, sort='-x')
                                 )
-            
+
+    if len(dict_plots) == 0:
+        warnings.warn("Zero plots were generated. Please ensure you specifiy the correct parameters for cols and include")
+
     return dict_plots
