@@ -109,17 +109,21 @@ def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     correlation_methods = {'pearson', 'kendall', 'spearman'}
     colour_palette_list = {'blueorange', 'brownbluegreen', 'purplegreen', 'pinkyellowgreen', 'purpleorange', 'redblue', 'redgrey', 'redyellowblue', 'redyellowgreen', 'spectral'}
     numeric_cols = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-    assert isinstance(df, pd.DataFrame), "must pass in pandas DataFrame"
-    assert method in correlation_methods, "correlation method not acceptable"
+    if not isinstance(df, pd.DataFrame):
+        raise Exception("must pass in pandas DataFrame")
+    if method not in correlation_methods:
+        raise Exception("correlation method not acceptable")
     if colour_palette not in colour_palette_list:
         warnings.warn("Recommended Altair continuous diverging colour palette")
     
     # calculate 
     if cols == None:
-        assert(df.select_dtypes(np.number).shape[1] >= 2), "Dataframe does not have enough numeric columns for comparison"
+        if (df.select_dtypes(np.number).shape[1] < 2):
+            raise Exception("Dataframe does not have enough numeric columns for comparison")
         df = df.select_dtypes(include = numeric_cols)
     else:
-        assert(df[cols].select_dtypes(np.number).shape[1] >= 2), "Dataframe does not have enough numeric columns for comparison"
+        if (df[cols].select_dtypes(np.number).shape[1] < 2):
+            raise Exception("Dataframe does not have enough numeric columns for comparison")
         df = df[cols].select_dtypes(include = numeric_cols)
     corr_df = round(df.corr(method=method),4).stack().reset_index(name='corr').rename(columns={'level_0':'variable_1','level_1':'variable_2'})
     
