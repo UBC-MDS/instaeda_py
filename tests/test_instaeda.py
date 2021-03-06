@@ -168,7 +168,9 @@ def test_plot_intro(input_dataframe):
     # Test the altair object
     plot_title = 'Memory Usage: ' + str(float(info_df['memory_usage'])) + 'kb'
     theme_config='Dimension'
-    test_plot = instaeda.plot_intro(input_dataframe) 
+    assert isinstance(plot_title, str)
+    assert isinstance(theme_config, str)
+    test_plot = instaeda.plot_intro(input_dataframe, plot_title=plot_title, theme_config=theme_config) 
 
     assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
     assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
