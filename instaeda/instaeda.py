@@ -34,10 +34,10 @@ def plot_intro(df, plot_title='', theme_config='Dimension'):
 
     # Check basic information for input data
     sum_missing_columns = df.isnull().sum(axis = 0) 
-    num_of_all_missing_columns = sum_missing_columns[sum_missing_columns.iloc[:, 0] == df.shape[0]].shape[0]
+    num_of_all_missing_columns = sum(sum_missing_columns)
 
     sum_missing_rows = df.isnull().sum(axis = 1)
-    num_complete_rows = sum_missing_rows[sum_missing_rows.iloc[:, 0] == 0].shape[0]
+    num_complete_rows = df.shape[0] - sum(sum_missing_rows)
 
     # Create info dataframe
     info_df = pd.DataFrame({'rows': df.shape[0], 
@@ -48,14 +48,14 @@ def plot_intro(df, plot_title='', theme_config='Dimension'):
                             'complete_rows': num_complete_rows,
                             'total_observations': df.shape[0] * df.shape[1],
                             'memory_usage': df.memory_usage(deep=True).sum(),
-                       })
+                       }, index = [0])
     
     # Create the plotting dataframe   
     plot_df = pd.DataFrame({'Metrics': ['Numeric Columns', 'All Missing Columns', 'Missing Observations', 'Complete Rows'], 
-                            'Value': [info_df['numeric_columns']/info_df['columns'], 
-                                      info_df['all_missing_columns']/info_df['columns'],
-                                      info_df['total_missing_values']/info_df['total_observations'],
-                                      info_df['complete_rows']/info_df['rows']],
+                            'Value': [float(info_df['numeric_columns']/info_df['columns']), 
+                                      float(info_df['all_missing_columns']/info_df['columns']),
+                                      float(info_df['total_missing_values']/info_df['total_observations']),
+                                      float(info_df['complete_rows']/info_df['rows'])],
                             'Dimension': ['column', 'column', 'observation', 'row']
                 })
 
@@ -63,11 +63,12 @@ def plot_intro(df, plot_title='', theme_config='Dimension'):
 
     ## Check whether the user specifies a plotting title
     if len(plot_title) == 0:
-        plot_title = 'Memory Usage:' + str(info_df['memory_usage'])
+        plot_title = 'Memory Usage: ' + str(float(info_df['memory_usage'])) + 'kb'
         intro_plot = alt.Chart(plot_df, title=plot_title).mark_bar().encode(
             alt.X('Value', axis=alt.Axis(format='%')),
             alt.Y('Metrics'),
             color=alt.Color(theme_config)) 
+        
     else:
         intro_plot = alt.Chart(plot_df, title=plot_title).mark_bar().encode(
             alt.X('Value', axis=alt.Axis(format='%')),
