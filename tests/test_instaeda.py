@@ -172,3 +172,9 @@ def test_plot_intro(input_dataframe):
 
     assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
     assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
+
+
+    test_plot = instaeda.plot_intro(input_dataframe, plot_title="meow") 
+
+    assert test_plot.title == 'meow', 'the result plot should have correctly set the title to meow'
+    
