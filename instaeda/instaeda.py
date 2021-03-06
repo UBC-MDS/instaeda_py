@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 import warnings
 
 
-def plot_intro(df, plot_title="", theme_config=""):
+def plot_intro(df, plot_title='', theme_config='Dimension'):
     """Takes a dataframe with configurations and returns an altair object with summary metrics.
 
     Parameters
@@ -13,9 +13,9 @@ def plot_intro(df, plot_title="", theme_config=""):
     df: pd.DataFrame
         Dataframe from which to take columns not limited to numerical columns only
     plot_title : string, optional
-        User can specify the plot title
+        User can specify the plot title, by default to show the memory usage
     theme_config : list, optional
-        A list of color configurations to be passed to theme
+        A list of color configurations to be passed to theme, by default to use Demension as config
 
     Returns
     -------
@@ -31,7 +31,50 @@ def plot_intro(df, plot_title="", theme_config=""):
                                     'num_specimen_seen': [10, 2, 1, 8]})
     >>> instaeda_py.plot_intro(example_df)
     """
-    pass
+
+    # Check basic information for input data
+    sum_missing_columns = df.isnull().sum(axis = 0) 
+    num_of_all_missing_columns = sum_missing_columns[sum_missing_columns.iloc[:, 0] == df.shape[0]].shape[0]
+
+    sum_missing_rows = df.isnull().sum(axis = 1)
+    num_complete_rows = sum_missing_rows[sum_missing_rows.iloc[:, 0] == 0].shape[0]
+
+    # Create info dataframe
+    info_df = pd.DataFrame({'rows': df.shape[0], 
+                            'columns': df.shape[1],
+                            'numeric_columns': len(list(df.select_dtypes(include=[np.number]).columns.values)),
+                            'all_missing_columns': num_of_all_missing_columns, 
+                            'total_missing_values': df.isnull().sum().sum(),
+                            'complete_rows': num_complete_rows,
+                            'total_observations': df.shape[0] * df.shape[1],
+                            'memory_usage': df.memory_usage(deep=True).sum(),
+                       })
+    
+    # Create the plotting dataframe   
+    plot_df = pd.DataFrame({'Metrics': ['Numeric Columns', 'All Missing Columns', 'Missing Observations', 'Complete Rows'], 
+                            'Value': [info_df['numeric_columns']/info_df['columns'], 
+                                      info_df['all_missing_columns']/info_df['columns'],
+                                      info_df['total_missing_values']/info_df['total_observations'],
+                                      info_df['complete_rows']/info_df['rows']],
+                            'Dimension': ['column', 'column', 'observation', 'row']
+                })
+
+    # Create the plot
+
+    ## Check whether the user specifies a plotting title
+    if len(plot_title) == 0:
+        plot_title = 'Memory Usage:' + str(info_df['memory_usage'])
+        intro_plot = alt.Chart(plot_df, title=plot_title).mark_bar().encode(
+            alt.X('Value', axis=alt.Axis(format='%')),
+            alt.Y('Metrics'),
+            color=alt.Color(theme_config)) 
+    else:
+        intro_plot = alt.Chart(plot_df, title=plot_title).mark_bar().encode(
+            alt.X('Value', axis=alt.Axis(format='%')),
+            alt.Y('Metrics'),
+            color=alt.Color(theme_config)) 
+
+    return intro_plot
 
 def plot_corr(df, cols=None, method="pearson", colour_palette="purpleorange"):
     """Takes a dataframe, subsets numeric columns and returns a correlation plot object.
