@@ -188,7 +188,8 @@ def test_plot_corr(input_dataframe):
         instaeda.plot_corr(input_dataframe).layer[1].encoding.text.shorthand
         == "corr:Q"
     ), "text is correlation column passed, numeric"
-    assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.scale.domain == (
+    assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.\
+        scale.domain == (
         -1,
         1,
     ), "correlation values between -1, 1"
@@ -221,15 +222,13 @@ def test_plot_corr(input_dataframe):
     # test cols parameter
     with pytest.raises(Exception) as exc_info:
         instaeda.plot_corr(input_dataframe, cols=["year"])
-    assert "Dataframe does not have enough numeric columns for comparison" in str(
-        exc_info.value
-    )
+    assert "Dataframe does not have enough numeric columns for comparison"\
+        in str(exc_info.value)
 
     with pytest.raises(Exception) as exc_info:
         instaeda.plot_corr(input_dataframe, cols=["year"])
-    assert "Dataframe does not have enough numeric columns for comparison" in str(
-        exc_info.value
-    )
+    assert "Dataframe does not have enough numeric columns for comparison"\
+        in str(exc_info.value)
 
     # should not raise an exception
     try:
@@ -251,17 +250,20 @@ def test_plot_intro(input_dataframe):
     assert isinstance(num_complete_rows, int)
 
     # Check the shape of info dataframe
+    row_n = input_dataframe.shape[0]
+    column_n = input_dataframe.shape[1]
     info_df = pd.DataFrame(
         {
             "rows": input_dataframe.shape[0],
             "columns": input_dataframe.shape[1],
             "numeric_columns": len(
-                list(input_dataframe.select_dtypes(include=[np.number]).columns.values)
+                list(input_dataframe.select_dtypes(include=[np.number])
+                     .columns.values)
             ),
             "all_missing_columns": num_of_all_missing_columns,
             "total_missing_values": input_dataframe.isnull().sum().sum(),
             "complete_rows": num_complete_rows,
-            "total_observations": input_dataframe.shape[0] * input_dataframe.shape[1],
+            "total_observations": row_n * column_n,
             "memory_usage": input_dataframe.memory_usage(deep=True).sum(),
         },
         index=[0],
@@ -283,7 +285,8 @@ def test_plot_intro(input_dataframe):
             "Value": [
                 float(info_df["numeric_columns"] / info_df["columns"]),
                 float(info_df["all_missing_columns"] / info_df["columns"]),
-                float(info_df["total_missing_values"] / info_df["total_observations"]),
+                float(info_df["total_missing_values"]
+                      / info_df["total_observations"]),
                 float(info_df["complete_rows"] / info_df["rows"]),
             ],
             "Dimension": ["column", "column", "observation", "row"],
@@ -304,10 +307,12 @@ def test_plot_intro(input_dataframe):
                                     theme_config=theme_config)
 
     assert test_plot.mark == 'bar', 'the result plot should be a bar plot'
-    assert isinstance(test_plot, alt.Chart), "output should be an altair Chart object"
+    assert isinstance(test_plot, alt.Chart),\
+        "output should be an altair Chart object"
 
     # plot_title tests
     test_plot = instaeda.plot_intro(input_dataframe, plot_title="meow")
-    assert test_plot.title == 'meow', 'the result plot should have correctly set the title to meow'
+    assert test_plot.title == 'meow',\
+        'the result plot should have correctly set the title to meow'
     test_plot = instaeda.plot_intro(input_dataframe, plot_title="")
     assert "Memory Usage" in test_plot.title, 'Fail using an empty plot_title'
