@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Quick and easy way to clean data and build exploratory data analysis plots"
 authors = ["Justin Fu <jufu11@gmail.com>"]
 license = "MIT"
+exclude = [ "./tests/.ipynb_checkpoints/*" ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
