@@ -177,12 +177,31 @@ def test_divide_and_fill(input_dataframe):
 
 
 def test_plot_corr(input_dataframe):
-    assert instaeda.plot_corr(input_dataframe).layer[0].mark == "rect", "resulting mark should be type 'rect'"
-    assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.shorthand == 'corr', "correlation values should be plotted on colour"
-    assert instaeda.plot_corr(input_dataframe).layer[1].encoding.text.shorthand == 'corr:Q', "text is correlation column passed, numeric"
-    assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.scale.domain == (-1, 1), "correlation values between -1, 1"
-    assert (instaeda.plot_corr(input_dataframe).layer[0].encoding.x.shorthand == 'variable_1') & (instaeda.plot_corr(input_dataframe).layer[0].encoding.y.shorthand == 'variable_2'), "map 'variable_1' to x-axis, 'variable_2' to y-axis"
-    assert isinstance(instaeda.plot_corr(input_dataframe), alt.LayerChart), "output expected altair Layer Chart object"
+    assert (
+        instaeda.plot_corr(input_dataframe).layer[0].mark == "rect"
+    ), "resulting mark should be type 'rect'"
+    assert (
+        instaeda.plot_corr(input_dataframe).layer[0].encoding.color.shorthand
+        == "corr"
+    ), "correlation values should be plotted on colour"
+    assert (
+        instaeda.plot_corr(input_dataframe).layer[1].encoding.text.shorthand
+        == "corr:Q"
+    ), "text is correlation column passed, numeric"
+    assert instaeda.plot_corr(input_dataframe).layer[0].encoding.color.scale.domain == (
+        -1,
+        1,
+    ), "correlation values between -1, 1"
+    assert (
+        instaeda.plot_corr(input_dataframe).layer[0].encoding.x.shorthand
+        == "variable_1"
+    ) & (
+        instaeda.plot_corr(input_dataframe).layer[0].encoding.y.shorthand
+        == "variable_2"
+    ), "map 'variable_1' to x-axis, 'variable_2' to y-axis"
+    assert isinstance(
+        instaeda.plot_corr(input_dataframe), alt.LayerChart
+    ), "output expected altair Layer Chart object"
 
     # test not a dataframe
     with pytest.raises(Exception) as exc_info:
@@ -201,12 +220,16 @@ def test_plot_corr(input_dataframe):
 
     # test cols parameter
     with pytest.raises(Exception) as exc_info:
-        instaeda.plot_corr(input_dataframe, cols=['year'])
-    assert 'Dataframe does not have enough numeric columns for comparison' in str(exc_info.value)
+        instaeda.plot_corr(input_dataframe, cols=["year"])
+    assert "Dataframe does not have enough numeric columns for comparison" in str(
+        exc_info.value
+    )
 
     with pytest.raises(Exception) as exc_info:
-        instaeda.plot_corr(input_dataframe, cols=['year'])
-    assert 'Dataframe does not have enough numeric columns for comparison' in str(exc_info.value)
+        instaeda.plot_corr(input_dataframe, cols=["year"])
+    assert "Dataframe does not have enough numeric columns for comparison" in str(
+        exc_info.value
+    )
 
     # should not raise an exception
     try:
@@ -228,28 +251,44 @@ def test_plot_intro(input_dataframe):
     assert isinstance(num_complete_rows, int)
 
     # Check the shape of info dataframe
-    info_df = pd.DataFrame({'rows': input_dataframe.shape[0],
-                            'columns': input_dataframe.shape[1],
-                            'numeric_columns': len(list(input_dataframe.select_dtypes(include=[np.number]).columns.values)),
-                            'all_missing_columns': num_of_all_missing_columns,
-                            'total_missing_values': input_dataframe.isnull().sum().sum(),
-                            'complete_rows': num_complete_rows,
-                            'total_observations': input_dataframe.shape[0] * input_dataframe.shape[1],
-                            'memory_usage': input_dataframe.memory_usage(deep=True).sum(),
-                            }, index=[0])
+    info_df = pd.DataFrame(
+        {
+            "rows": input_dataframe.shape[0],
+            "columns": input_dataframe.shape[1],
+            "numeric_columns": len(
+                list(input_dataframe.select_dtypes(include=[np.number]).columns.values)
+            ),
+            "all_missing_columns": num_of_all_missing_columns,
+            "total_missing_values": input_dataframe.isnull().sum().sum(),
+            "complete_rows": num_complete_rows,
+            "total_observations": input_dataframe.shape[0] * input_dataframe.shape[1],
+            "memory_usage": input_dataframe.memory_usage(deep=True).sum(),
+        },
+        index=[0],
+    )
     info_df_rows = info_df.shape[0]
     info_df_cols = info_df.shape[1]
     assert info_df_rows == 1
     assert info_df_cols == 8
 
     # Check the shape of plotting dataframe
-    plot_df = pd.DataFrame({'Metrics': ['Numeric Columns', 'All Missing Columns', 'Missing Observations', 'Complete Rows'],
-                            'Value': [float(info_df['numeric_columns']/info_df['columns']),
-                                      float(info_df['all_missing_columns']/info_df['columns']),
-                                      float(info_df['total_missing_values']/info_df['total_observations']),
-                                      float(info_df['complete_rows']/info_df['rows'])],
-                            'Dimension': ['column', 'column', 'observation', 'row'],
-                            })
+    plot_df = pd.DataFrame(
+        {
+            "Metrics": [
+                "Numeric Columns",
+                "All Missing Columns",
+                "Missing Observations",
+                "Complete Rows",
+            ],
+            "Value": [
+                float(info_df["numeric_columns"] / info_df["columns"]),
+                float(info_df["all_missing_columns"] / info_df["columns"]),
+                float(info_df["total_missing_values"] / info_df["total_observations"]),
+                float(info_df["complete_rows"] / info_df["rows"]),
+            ],
+            "Dimension": ["column", "column", "observation", "row"],
+        }
+    )
     plot_df_rows = plot_df.shape[0]
     plot_df_cols = plot_df.shape[1]
     assert plot_df_rows == 4
