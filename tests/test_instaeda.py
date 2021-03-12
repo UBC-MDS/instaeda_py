@@ -10,9 +10,6 @@ from pandas._testing import assert_frame_equal
 # import warnings
 
 
-def test_version():
-    assert __version__ == '0.1.0'
-
 
 @pytest.fixture
 def input_dataframe():
