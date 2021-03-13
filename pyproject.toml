@@ -24,7 +24,7 @@ flake8 = "^3.8.4"
 pytest-cov = "^2.11.1"
 
 [tool.semantic_release]
-version_variable = "instaeda/__init__.py:__version__"
+version_variable = "UBC-MDS/instaeda_py/__init__.py:__version__"
 version_source = "commit"
 upload_to_pypi = "false"
 patch_without_tag = "true"
