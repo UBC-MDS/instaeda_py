@@ -1,4 +1,3 @@
-from instaeda import __version__
 from instaeda import instaeda
 import pytest
 from palmerpenguins import load_penguins
@@ -8,10 +7,6 @@ import numpy as np
 from pandas._testing import assert_frame_equal
 # from sklearn.impute import SimpleImputer
 # import warnings
-
-
-def test_version():
-    assert __version__ == '0.1.0'
 
 
 @pytest.fixture
