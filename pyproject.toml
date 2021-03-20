@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "instaeda"
-version = "0.1.7"
+version = "0.1.8"
 description = "Quick and easy way to clean data and build exploratory data analysis plots"
 authors = ["Justin Fu <jufu11@gmail.com>"]
 license = "MIT"
