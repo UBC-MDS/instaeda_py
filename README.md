@@ -6,13 +6,16 @@ Quick and easy way to clean data and build exploratory data analysis plots.
 
 This idea came up as we have been building data projects for quite some time now in the UBC MDS program. We noticed that there are some repetitive activities that occur when we first explore the data. This project will help you take a given raw data set an conduct some data cleansing and plotting with a minimal amount of code.
 
+At present, this package currently supports pandas DataFrame as inputs. In the future, we may assess other input types to support. 
+Most of the functions will support numerical data types in the DataFrame; however, some function(s) will also support Strings (type: object) columns.
+
 The main components of this package are:
 
 - **Data Checking**
   - Plot basic information for input data: Take the input data and declare the title of the plot and a list of configurations to be passed to themes to invisibly return the Altair object with summary metrics including the memory usage, the basic description of the input data such as the distribution of the discrete columns, continuous columns, all missing columns, complete rows and missing observations. 
   
 - **Data Cleansing**
-  - Custom Imputation of missing values in a data frame using additional techniques, i.e random shuffling by dividing data set into several parts and filling each part separately then returns combined imputed data frame.
+  - Custom Imputation of missing values in a data frame. This includes filling the missing values with the mean, median, constant, and most_frequent. There is also a feature to divide and fill where it splits the DataFrame into parts, then applies the custom imputation on each group. Lastly, there is the parameter to randomly shuffle the dataframe.
 
 - **Exploratory Visualization**
   - Numerical Correlation Plot: takes in a data frame, selects the numerical columns and outputs a correlation plot object. User can optionally pass in subset of columns to define which columns to compare.
