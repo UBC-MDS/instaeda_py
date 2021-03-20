@@ -31,17 +31,41 @@ There are a myriad of packages that provide similar functionality in the Python 
 $ pip install -i https://test.pypi.org/simple/ instaeda
 ```
 
-## Features
-
-- TODO
 
 ## Dependencies
 
-- TODO
+```bash
+python = "^3.8"
+pandas = "^1.2.3"
+palmerpenguins = "^0.1.4"
+altair = "^4.1.0"
+numpy = "^1.20.1"
+vega-datasets = "^0.9.0"
+scikit-learn = "^0.24.1"
+```
 
 ## Usage
 
-- TODO
+```python
+from palmerpenguins import load_penguins
+from instaeda import instaeda
+
+penguin_df = load_penguins()
+
+#plot_intro
+instaeda.plot_intro(penguin_df)
+
+#plot_corr
+instaeda.plot_corr(penguin_df)
+
+#divide_and_fill
+instaeda.divide_and_fill(penguin_df)
+
+#plot_basic_distributions
+dict_plots = instaeda.plot_basic_distributions(penguin_df)
+dict_plots['bill_length_mm']   
+dict_plots['species']
+```
 
 ## Documentation
 
